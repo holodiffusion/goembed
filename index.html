@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+  <!-- Comment the following once we are ready to be indexed :) -->
+  <meta name="robots" content="noindex">
+  <meta charset="utf-8">
+  <meta name="description"
+        content="With HoloDiffusion, we propose the first true 3D diffusion based unconditional generative
+        model which is trained without having access to any ground truth 3D data. We train the model using only
+        posed-image supervision.">
+  <meta name="keywords" content="neural-representations, regular-structures, volume-rendering, spatial-representation">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>GOEnFusion: Gradient Origin Encodings for 3D Forward Diffusion Models</title>
+
+  <!-- StyleSheet for fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <!-- StyleSheets (css) for appearance -->
+  <link rel="stylesheet" type="text/css" href="./static/slick/slick.css"/>
+  <link rel="stylesheet" type="text/css" href="./static/slick/slick-theme.css"/>
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <!-- <link rel="stylesheet" href="./static/css/fontawesome.all.min.css"> -->
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+
+  <!-- More JavaScripts -->
+  <!-- <script src="./static/js/fontawesome.all.min.js"></script> -->
+  <script src="https://kit.fontawesome.com/0bf72752d4.js" crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <!-- <script type="text/javascript" src="./static/slick/slick.min.js"></script> -->
+  <script src="./static/js/index.js"></script>
+  <!-- Math -->
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <!-- Overridden style elements: -->
+  <!-- Reduced the vertical padding of the Section elements in order to make good use of available content space -->
+  <style>
+    .section{
+      padding: 1rem 1.5rem;
+    }
+    p{
+      font-size: medium;
+      font-weight: normal;
+    }
+  </style>
+
+</head>
+
+<body>
+<section class="hero">
+  <div class="hero-body" style="padding-bottom: 10px;">
+    <div class="container has-text-centered">
+      <div class="columns is-centered">
+        <div class="column is-10">
+          <h1 class="title is-2 publication-title">
+            <strong>GOEnFusion</strong>: Gradient Origin Encodings for 3D Forward Diffusion Models
+          </h1>
+          <div class="is-size-6 publication-authors">
+            <div class="author-block">
+              <div class="author-portrait">
+                <img src="static/images/portraits/animesh-karnewar_genai_orange.png" class="rgb preload" />
+              </div>
+              <a href="https://akanimax.github.io/" style="color: #f27050 !Important;" target="_blank">Animesh Karnewar</a><sup style="color: #037dff;">1 <i class="fa-brands fa-meta" style="color: #037dff;"></i> </sup></div>
+            <div class="author-block">
+              <div class="author-portrait">
+                <img src="static/images/portraits/andrea-vedaldi.jpg" class="rgb preload" />
+              </div>
+              <a href="https://www.robots.ox.ac.uk/~vedaldi" style="color: #f27050 !Important;" target="_blank">Andrea Vedaldi</a><sup> <i class="fa-brands fa-meta" style="color: #037dff;"></i> </sup></div>
+            <div class="author-block">
+                <div class="author-portrait">
+                  <img src="static/images/portraits/niloy-mitra.jpg" class="rgb preload" />
+                </div>
+                <a href="http://www0.cs.ucl.ac.uk/staff/n.mitra/" style="color: #f27050 !Important;" target="_blank">Niloy J. Mitra</a><sup style="color: #037dff;">1</sup></div>
+            <div class="author-block">
+              <div class="author-portrait">
+                <img src="static/images/portraits/david-novotny.jpg" class="rgb preload" />
+              </div>
+              <a href="https://d-novotny.github.io/" style="color: #f27050 !Important;" target="_blank">David Novotny</a><sup> <i class="fa-brands fa-meta" style="color: #037dff;"></i> </sup></div>
+          </div>
+          <div class="column has-text-centered">
+            <div class="publication-links">
+            <!----------------------------------------------------------------------------------------------------------->
+            <!-- Add the links below when available -->
+            <!----------------------------------------------------------------------------------------------------------->
+              <span class="link-block">
+                  <a href="https://arxiv.org/abs/2308.14244" target="_blank"
+                     style="background-color: #f27050;" class="external-link button is-normal is-rounded is-dark">
+                    <span class="icon">
+                        <i class="ai ai-arxiv"></i>
+                    </span>
+                    <span>arXiv </span>
+                  </a>
+              </span>
+              <span class="link-block">
+                <a href="static/docs/karnewar_HoloFusion_iccv2023.pdf"
+                   target="_blank" style="background-color: #f27050;"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="far fa-file-alt"></i>
+                  </span>
+                  <span>Paper (pdf)</span>
+                </a>
+              </span>
+              <!-- <span class="link-block">
+                <a href="#" 
+                   style="background-color: #f27050;"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                    <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code (coming soon ...)</span>
+                  </a>
+              </span> -->
+            <!----------------------------------------------------------------------------------------------------------->
+            </div>
+          </div>
+          <div class="is-size-6 publication-authors">
+            <span class="author-block" style="color: #0265cf;"><sup style="color: #037dff;">1</sup>University College London,</span>
+            <span class="author-block" style="color: #0265cf;"><sup> <i class="fa-brands fa-meta" style="color: #037dff;"></i> </sup> Meta-AI</span><br>
+          </div>
+          <!-- <div class="is-size-5 publication-authors">
+            <span class="author-block"><strong>(ICCV 2023)</strong></span>
+          </div> -->
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr/>
+
+<section class="hero teaser">
+  <div class="hero-body" style="padding-bottom: 10px;">
+    <div class="container">
+      <div class="columns is-centered has-text-centered">
+        <div class="column is-four-fifths">
+          <div class="columns is-centered">
+            <img src="static/figures/teaser_figure.png" alt="GOEnFusion teaser figure" width="100%"/>
+          </div>
+
+          <p class="has-text-justified"> 
+            We propose the <strong>GOEn</strong> (<strong>G</strong>radient <strong>O</strong>rigin <strong>En</strong>coding) that encodes source views 
+            (observations) into arbitrary 3D Radiance-Field representations \(g(c, d)\)
+            while trying to maximize the transfer of source information. <strong>GOEn</strong> encodings can 
+            be used in the context of 3D forward diffusion models
+            and for regression-based 3D reconstruction.
+          </p>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-fullhd">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-4">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            The recently introduced Foward-Diffusion method allows to train a 3D diffusion model using 
+            only 2D images for supervision. However, it does not easily generalise to different 3D 
+            representations and requires a computationally expensive auto-regressive sampling process 
+            to generate the underlying 3D scenes. In this paper, we propose 
+            <strong>GOEn</strong>: <strong>G</strong>radient <strong>O</strong>rigin 
+            <strong>En</strong>coding (pronounced "gone"). GOEn can encode input images into 
+            any type of 3D representation without the need to use a pre-trained image feature 
+            extractor. It can also handle single, multiple or no source view(s) alike, 
+            by design, and tries to maximise the information transfer from the views to the 
+            encodings. Our proposed <strong>GOEnFusion</strong> model pairs 
+            <strong>GOEn</strong> encodings with a realisation of the 
+            Forward-Dif<strong>fusion</strong> model which addresses the limitations of the 
+            vanilla Forward-Diffusion realisation. We evaluate how much information the 
+            GOEn mechanism transfers to the encoded representations, and how well it captures 
+            the prior distribution over the underlying 3D scenes, through the lens of a 
+            partial AutoEncoder. Lastly, the efficacy of the GOEnFusion model is evaluated on the 
+            recently proposed OmniObject3D dataset while comparing to the state-of-the-art 
+            Forward and non-Forward-Diffusion models and other 3D generative models.
+          </p>
+        </div>
+      </div>
+    </div>
+    <!--/ Abstract. -->
+  </div>
+</section>
+
+<hr/>
+
+<section class="section">
+  <div class="container is-fullhd">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+          <h2 class="title is-4 has-text-centered">Method</h2>
+          <div class="has-text-centered" style="padding-bottom: 15px;"> 
+            <img src="static/figures/goen_method.png" alt="Holo-diffusion conceptual illustration" width="100%"/>
+          </div>
+          <p> 
+            <strong>Didactic illustration of the GOEn mechanism</strong>. We demonstrate the mechanism 
+            here using the Triplane representation for \(g(c, d)\), but note that this can be applied to 
+            other representations as well. The GOEn mechanism consists of two 
+            steps. First we render the origin \(\zeta_0\) from the context-poses \(\phi^\text{ctxt}\) into 
+            almost blank renders. Then, we compute the gradient of the MSE between the renders and the 
+            source-views \(o^\text{ctxt}\) wrt. the origin \(\zeta_0\) which gives us the GOEn encoded 
+            version \(\zeta_\text{enc}\) .
+          </p>
+    
+          <div class="has-text-justified" style="padding-top: 10px; padding-bottom: 15px;"> 
+            <p> 
+              We propose Gradient Origin Encodings (GOEns), where we define the encodings of the 
+              observations as the gradient of the log-likelihood of the observations under the 
+              differentiable \(\texttt{forward}\) operation. Without loss of generality, 
+              assuming that \(\zeta\) are the parameters of the \(g\) function (i.e. the 
+              features/weights of the 3D Radiance-Field), \(\mathcal{R}\) is the differntiable render (\( \texttt{forward} \))
+              functional and \(\zeta_0\) denotes the origin (zero parameters), we define the 
+              encodings \(\zeta_\text{enc}\) (fig. above) as follows:
+              
+              \begin{align}
+                \zeta_\text{enc} &:= GOEn(g, \mathcal{R}, o^\text{ctxt}, \phi^\text{ctxt}) \nonumber \\
+                                 &\boxed{:= -\nabla_{\zeta_0}||o^\text{ctxt} - \mathcal{R}(g, \phi^\text{ctxt}; \zeta_0)||^2_2.} \label{eq:goen_enc}
+              \end{align}
+              
+              As done usually, we estimate the log-likehood by the mean squared error and note that 
+              the encoding function \(GOEn\) backpropagates through the differentiable forward functional 
+              \(\mathcal{R}\). As apparent, these encodings can handle single, multiple or no source views by design,  
+              and can be used with any 3D representation \(g\). We minimise the following 
+              loss function:
+
+              \begin{align}
+                &\mathcal{L}^\text{GOEn-MSE}(o^\text{ctxt}, \hat{o}^\text{ctxt}) := ||o^\text{ctxt} - \hat{o}^\text{ctxt}  ||^2_2 \nonumber \\
+                & := ||o^\text{ctxt} - \mathcal{R}(g, \phi^\text{ctxt}; GOEn(g, \mathcal{R}, o^\text{ctxt}, \phi^\text{ctxt}))||^2_2,
+              \end{align}
+
+              for maximising the information content in the encodings \(\zeta_\text{enc}\). 
+              We essentially re-purpose the backward pass of the rendering function to encode the 
+              information in the source views \(o^\text{ctxt}\) into the parameters of the 3D scene 
+              representation \(\zeta\).
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr/>
+
+<section class="section">
+  <div class="container is-fullhd">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <div class="content has-text-justified">
+          <h2 class="title is-4 has-text-centered">Partial Auto-encoding experiments</h2>
+          <div class="has-text-centered" style="padding-bottom: 15px;">
+            <img src="static/figures/table.png" alt="Holo-diffusion results" width="80%"/>
+          </div>  
+          <p> 
+            <strong>FID \( (\downarrow) \) and KID \( (\uparrow) \) on 4 classes of CO3Dv2.</strong> 
+            We compare with 3D generative modeling baselines (rows 1 - 5);
+            with an SDS distillation-based 
+            <a href="https://github.com/ashawkey/stable-dreamfusion"> Stable-DreamFusion </a>
+            (row 6); and with ablations of our HoloFusion (rows 7-8). The column
+            “VP” denotes whether renders of a method are 3D view-consistent or not.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr/>
+
+<section class="section" id="Video results">
+  <div class="container content is-fullhd">
+    <div class="columns is-centered">
+      <div class="column is-7">
+        <h2 class="title is-4 has-text-centered" style="padding-bottom: 10px;">Qualitative Results</h2>
+        
+        <div class="columns is-centered">  
+          <div class="column is-full is-paddingless has-text-centered">
+            <div class="columns is-gapless is-centered">
+              <div class="column is-one-fifth">
+                <div class="card">
+                  <h6><strong>PiGAN</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_generative_3D/apple_pigan.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-fifth">
+                <div class="card">
+                  <h6><strong>EG3D</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_generative_3D/reversed_apple_eg3d.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-fifth">
+                <div class="card">
+                  <h6><strong>GET3D</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_generative_3D/apple_get3d.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-fifth">
+                <div class="card">
+                  <h6><strong>Stable-DreamFusion</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_generative_3D/apple_sdf.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-fifth">
+                <div class="card">
+                  <h6><strong>HoloFusion (Ours)</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_generative_3D/apple_holofusion.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="columns is-centered">  
+          <div class="column is-full is-paddingless has-text-centered">
+            <div class="columns is-gapless is-centered">
+              <div class="column is-one-fifth">
+                <div class="card">
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_generative_3D/donut_pigan.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-fifth">
+                <div class="card">
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_generative_3D/reversed_donut_eg3d.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-fifth">
+                <div class="card">
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_generative_3D/donut_get3d.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-fifth">
+                <div class="card">
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_generative_3D/donut_sdf.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-fifth">
+                <div class="card">
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_generative_3D/donut_sample_131.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="columns is-centered">  
+          <div class="column is-full is-paddingless has-text-centered">
+            <div class="columns is-gapless is-centered">
+              <div class="column is-one-fifth">
+                <div class="card">
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_generative_3D/hydrant_pigan.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-fifth">
+                <div class="card">
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_generative_3D/reversed_hydrant_eg3d.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-fifth">
+                <div class="card">
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_generative_3D/hydrant_get3d.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-fifth">
+                <div class="card">
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_generative_3D/hydrant_sdf.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-fifth">
+                <div class="card">
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_generative_3D/hydrant_sample_36.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="columns is-centered">  
+          <div class="column is-full is-paddingless has-text-centered">
+            <div class="columns is-gapless is-centered">
+              <div class="column is-one-fifth">
+                <div class="card">
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_generative_3D/teddy_pigan.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-fifth">
+                <div class="card">
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_generative_3D/reversed_teddy_eg3d.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-fifth">
+                <div class="card">
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_generative_3D/teddy_get3d.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-fifth">
+                <div class="card">
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_generative_3D/teddy_sdf.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-fifth">
+                <div class="card">
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_generative_3D/teddybear_sample_54.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="columns is-centered" style="padding-top:15px;">
+      <div class="column is-four-fifths">
+        <p> 
+          <strong>Comparisons with 3D Generative Baselines.</strong> 
+          <a href="https://marcoamonteiro.github.io/pi-GAN-website/" target="_blank">PiGAN</a>
+           generates non-3D-consistent samples,
+          while 
+          <a href="https://nvlabs.github.io/eg3d/" target="_blank">EG3D</a> 
+          and 
+          <a href="https://nv-tlabs.github.io/GET3D/" target="_blank"> GET3D </a> 
+          generates with severe artifacts on the Real-captured Co3Dv2 dataset. 
+          <a href="https://github.com/ashawkey/stable-dreamfusion"> Stable-DreamFusion </a>
+          generates 3D-consistent samples but with less details and realism. HoloFusion generates high-quality 3D consistent samples.
+        </p>
+        <div class="columns is-centered">  
+          <div class="column is-half has-text-centered" style="padding-left: 0px;">
+            <div class="columns is-gapless is-centered">
+              <div class="column is-one-third">
+                <div class="card">
+                  <h6><strong>HoloDiffusion</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_holo_diffusion_variants/apple_holodiffusion.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-third">
+                <div class="card">
+                  <h6><strong>HoloDiffusion*</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                    src="static/videos/qualitative_results/holo_fusion_vs_holo_diffusion_variants/apple_holo_star.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-third">
+                <div class="card">
+                  <h6><strong>HoloFusion</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_holo_diffusion_variants/apple_holofusion.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="column is-half has-text-centered" style="padding-right: 0px;">
+            <div class="columns is-gapless is-centered">
+              <div class="column is-one-third">
+                <div class="card">
+                  <h6><strong>HoloDiffusion</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                    src="static/videos/qualitative_results/holo_fusion_vs_holo_diffusion_variants/donut_holodiffusion.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-third">
+                <div class="card">
+                  <h6><strong>HoloDiffusion*</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                    src="static/videos/qualitative_results/holo_fusion_vs_holo_diffusion_variants/donut_holo_star.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-third">
+                <div class="card">
+                  <h6><strong>HoloFusion</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_holo_diffusion_variants/donut_holofusion.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <div class="columns is-centered">  
+          <div class="column is-half has-text-centered" style="padding-left: 0px;">
+            <div class="columns is-gapless is-centered">
+              <div class="column is-one-third">
+                <div class="card">
+                  <h6><strong>HoloDiffusion</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_holo_diffusion_variants/hydrant_holodiffusion.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-third">
+                <div class="card">
+                  <h6><strong>HoloDiffusion*</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_holo_diffusion_variants/hydrant_holo_star.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-third">
+                <div class="card">
+                  <h6><strong>HoloFusion</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_holo_diffusion_variants/hydrant_holofusion.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="column is-half has-text-centered" style="padding-right: 0px;">
+            <div class="columns is-gapless is-centered">
+              <div class="column is-one-third">
+                <div class="card">
+                  <h6><strong>HoloDiffusion</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_holo_diffusion_variants/teddy_holodiffusion.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-third">
+                <div class="card">
+                  <h6><strong>HoloDiffusion*</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_holo_diffusion_variants/teddy_holo_star.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-third">
+                <div class="card">
+                  <h6><strong>HoloFusion</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_vs_holo_diffusion_variants/teddy_holofusion.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <p> 
+          <strong>Comparisons with HoloDiffusion variants.</strong> 
+          <a href="https://holodiffusion.github.io" target="_blank"> HoloDiffusion </a>
+           samples are 3D consistent but lack details and realism. HoloDiffusion* baseline shows the output 
+          of the 2D superresolution network directly without the 2nd distillation stage.
+        </p>
+      </div>
+    </div>
+
+    <div class="columns is-centered" style="padding-top:15px;">
+      <div class="column is-four-fifths">
+        <div class="columns is-centered">  
+          <div class="column is-half has-text-centered" style="padding-left: 0px;">
+            <div class="columns is-gapless is-centered">
+              <div class="column is-one-third">
+                <div class="card">
+                  <h6><strong>MSE</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_ablations/apple_mse.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-third">
+                <div class="card">
+                  <h6><strong>SDS</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_ablations/apple_sds.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-third">
+                <div class="card">
+                  <h6><strong>HoloFusion</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_ablations/apple_ours.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="column is-half has-text-centered" style="padding-right: 0px;">
+            <div class="columns is-gapless is-centered">
+              <div class="column is-one-third">
+                <div class="card">
+                  <h6><strong>MSE</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_ablations/donut_mse.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-third">
+                <div class="card">
+                  <h6><strong>SDS</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_ablations/donut_sds.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-third">
+                <div class="card">
+                  <h6><strong>HoloFusion</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_ablations/donut_ours.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <div class="columns is-centered">  
+          <div class="column is-half has-text-centered" style="padding-left: 0px;">
+            <div class="columns is-gapless is-centered">
+              <div class="column is-one-third">
+                <div class="card">
+                  <h6><strong>MSE</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_ablations/hydrant_mse.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-third">
+                <div class="card">
+                  <h6><strong>SDS</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_ablations/hydrant_sds.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-third">
+                <div class="card">
+                  <h6><strong>HoloFusion</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_ablations/hydrant_ours.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="column is-half has-text-centered" style="padding-right: 0px;">
+            <div class="columns is-gapless is-centered">
+              <div class="column is-one-third">
+                <div class="card">
+                  <h6><strong>MSE</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_ablations/teddy_mse.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-third">
+                <div class="card">
+                  <h6><strong>SDS</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_ablations/teddy_sds.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+              <div class="column is-one-third">
+                <div class="card">
+                  <h6><strong>HoloFusion</strong></h6>
+                  <div class="card-image">
+                    <video autoplay loop muted playsinline
+                      src="static/videos/qualitative_results/holo_fusion_ablations/teddy_ours.mp4"
+                      slot="before" loading="lazy" height="256" width="256"></video>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <p> 
+          <strong>Ablation experiments.</strong> 
+          SDS version produces smooth textures and washes out the high-frequency details. MSE version produces floaters 
+          and view-point inconsistent artifacts (see the white patches on the hat of the TeddyWizard). Ours on the 
+          other hand, produces view-consistent and realistic looking results.
+        </p>
+
+        <div class="card">
+          <div class="card-image">
+            <video autoplay loop muted playsinline
+              src="static/videos/collages/collage.mp4"
+              slot="before" loading="lazy" width="1200"></video>
+          </div>
+        </div>
+        <p> 
+          <strong>More qualitative samples.</strong> 
+          Random, uncurated samples generated by our HoloFusion on different classes of the Co3DV2 dataset.
+          Our approach generates high quality 3D view-consistent results across all classes.
+        </p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<hr/>
+
+<!-- <hr/> -->
+
+<section class="section" id="BibTeX">
+  <div class="container content is-fullhd">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-4 has-text-centered">Bibtex</h2>
+        <pre><code>
+          @article{Karnewar2023goenfusion,
+            title={{GOEnFusion}: Gradient Origin Encodings for 3D Forward DIffusion Models},
+            author={Karnewar, Animesh and Vedaldi, Andrea and Mitra, Niloy J. and Novotny, David},
+            journal={arXiv preprint arXiv:2312.02981 (CHANGE THIS!)},
+            year={2023}
+          }
+
+        </code></pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="acknowledgements">
+  <div class="container has-text-justified">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-4 has-text-centered">Acknowledgements</h2>
+        <div class="columns">
+          <div class="column is-3">
+            <img src="static/images/logos/prime-eu-logo.png" alt="PRIME-EU logo" width="100%"/></div>
+          <div class="column">
+          <p><strong>Animesh and Niloy were partially funded by the European Union's Horizon 2020 research and
+            innovation programme under the Marie Skłodowska-Curie grant agreement No. 956585.</strong>
+            This research has also been supported by <strong>MetaAI</strong> 
+            and the <strong>UCL AI Centre</strong>.
+          </p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</body>
+</html>
