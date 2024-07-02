@@ -1,2 +1,2 @@
-# GOEnFusion
-Webpage for the research project "GOEnFusion: Gradient Origin Encodings for 3D Forward Diffusion Models"
+# GOEmbed
+Webpage for the research project "GOEmbed: Gradient Origin Embeddings for Representation Agnostic 3D Feature Learning"
