@@ -11,7 +11,7 @@
   <meta name="keywords" content="neural-representations, regular-structures, volume-rendering, spatial-representation">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>GOEnFusion: Gradient Origin Encodings for 3D Forward Diffusion Models</title>
+  <title>GOEmbed: Gradient Origin Embeddings for Representation Agnostic 3D Feature Learning</title>
 
   <!-- StyleSheet for fonts -->
   <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro" rel="stylesheet">
@@ -58,12 +58,12 @@
         <div class="columns is-centered">
           <div class="column is-10">
             <h1 class="title is-2 publication-title">
-              <strong>GOEnFusion</strong>: Gradient Origin Encodings for 3D Forward Diffusion Models
+              <strong>GOEmbed</strong>: Gradient Origin Embeddings for Representation Agnostic 3D Feature Learning
             </h1>
             <div class="is-size-6 publication-authors">
               <div class="author-block">
                 <div class="author-portrait">
-                  <img src="static/images/portraits/animesh-karnewar_genai_orange.png" class="rgb preload" />
+                  <img src="static/images/portraits/animesh-karnewar_genai_orange_cropped.png" class="rgb preload" />
                 </div>
                 <a href="https://akanimax.github.io/" style="color: #f27050 !Important;" target="_blank">Animesh
                   Karnewar</a><sup style="color: #037dff;">1 <i class="fa-brands fa-meta" style="color: #037dff;"></i>
@@ -75,6 +75,20 @@
                 </div>
                 <a href="https://www.robots.ox.ac.uk/~vedaldi" style="color: #f27050 !Important;" target="_blank">Andrea
                   Vedaldi</a><sup> <i class="fa-brands fa-meta" style="color: #037dff;"></i> </sup>
+              </div>
+              <div class="author-block">
+                <div class="author-portrait">
+                  <img src="static/images/portraits/roman-shapovalov-no-bkgd.jpeg" class="rgb preload" />
+                </div>
+                <a href="https://shapovalov.ro/" style="color: #f27050 !Important;" target="_blank">Roman
+                  Shapovalov</a><sup> <i class="fa-brands fa-meta" style="color: #037dff;"></i> </sup>
+              </div>
+              <div class="author-block">
+                <div class="author-portrait">
+                  <img src="static/images/portraits/tom-monnier-no-bkgd.jpeg" class="rgb preload" />
+                </div>
+                <a href="https://www.tmonnier.com/" style="color: #f27050 !Important;" target="_blank">Tom 
+                  Monnier</a><sup> <i class="fa-brands fa-meta" style="color: #037dff;"></i> </sup>
               </div>
               <div class="author-block">
                 <div class="author-portrait">
@@ -106,7 +120,7 @@
                   </a>
                 </span>
                 <span class="link-block">
-                  <a href="static/docs/karnewar2023goenfusion.pdf" target="_blank"
+                  <a href="static/docs/karnewar2023goembed.pdf" target="_blank"
                     style="background-color: #f27050;" class="external-link button is-normal is-rounded is-dark">
                     <span class="icon">
                       <i class="far fa-file-alt"></i>
@@ -133,9 +147,9 @@
               <span class="author-block" style="color: #0265cf;"><sup> <i class="fa-brands fa-meta"
                     style="color: #037dff;"></i> </sup> Meta-AI</span><br>
             </div>
-            <!-- <div class="is-size-5 publication-authors">
-            <span class="author-block"><strong>(ICCV 2023)</strong></span>
-          </div> -->
+            <div class="is-size-5 publication-authors">
+              <span class="author-block"><strong>(ECCV 2024)</strong></span>
+            </div>
           </div>
         </div>
       </div>
@@ -150,16 +164,15 @@
         <div class="columns is-centered has-text-centered">
           <div class="column is-four-fifths">
             <div class="columns is-centered">
-              <img src="static/figures/teaser_figure.png" alt="GOEnFusion teaser figure" width="100%" />
+              <img src="static/figures/teaser_figure.jpg" alt="GOEmbed teaser figure" width="100%" />
             </div>
 
             <p class="has-text-justified">
-              We propose the <strong>GOEn</strong> (<strong>G</strong>radient <strong>O</strong>rigin
-              <strong>En</strong>coding) that encodes source views
-              (observations) into arbitrary 3D Radiance-Field representations \(g(c, d)\)
-              while trying to maximize the transfer of source information. <strong>GOEn</strong> encodings can
-              be used in the context of 3D forward diffusion models
-              and for regression-based 3D reconstruction.
+              We propose the <strong>GOEmbed </strong> (<strong>G</strong>radient <strong>O</strong>rigin 
+              <strong>Embedd</strong>ing) mechanism that
+              encodes source views \(o^\text{ctxt}\) and camera parameters \(\phi^\text{ctxt}\) into arbitrary 3D Radiance-
+              Field representations \(g(c, d)\). We show how these general-purpose GOEmbeddings can be used in 
+              the context of 3D DFMs (Diffusion with Forward Models) and for sparse-view 3D reconstruction.
             </p>
 
           </div>
@@ -176,24 +189,23 @@
           <h2 class="title is-4">Abstract</h2>
           <div class="content has-text-justified">
             <p>
-              The recently introduced Foward-Diffusion method allows to train a 3D diffusion model using
-              only 2D images for supervision. However, it does not easily generalise to different 3D
-              representations and requires a computationally expensive auto-regressive sampling process
-              to generate the underlying 3D scenes. In this paper, we propose
-              <strong>GOEn</strong>: <strong>G</strong>radient <strong>O</strong>rigin
-              <strong>En</strong>coding (pronounced "gone"). GOEn can encode input images into
-              any type of 3D representation without the need to use a pre-trained image feature
-              extractor. It can also handle single, multiple or no source view(s) alike,
-              by design, and tries to maximise the information transfer from the views to the
-              encodings. Our proposed <strong>GOEnFusion</strong> model pairs
-              <strong>GOEn</strong> encodings with a realisation of the
-              Forward-Dif<strong>fusion</strong> model which addresses the limitations of the
-              vanilla Forward-Diffusion realisation. We evaluate how much information the
-              GOEn mechanism transfers to the encoded representations, and how well it captures
-              the prior distribution over the underlying 3D scenes, through the lens of a
-              partial AutoEncoder. Lastly, the efficacy of the GOEnFusion model is evaluated on the
-              recently proposed OmniObject3D dataset while comparing to the state-of-the-art
-              Forward and non-Forward-Diffusion models and other 3D generative models.
+              Encoding information from 2D views of an object into a 3D
+              representation is crucial for generalized 3D feature extraction and learning. 
+              Such features then enable various 3D applications, including reconstruction and generation. 
+              We propose <strong>GOEmbed</strong>: <strong>G</strong>radient <strong>O</strong>rigin <strong>E</strong>mbeddings 
+              that encodes input 2D images into any 3D representation, 
+              without requiring a pre-trained image feature extractor; unlike typical prior
+              approaches in which input images are either encoded using 2D features
+              extracted from large pre-trained models, or customized features are designed to handle different 
+              3D representations; or worse, encoders may not yet be available for specialized 3D neural 
+              representations such as MLPs and Hash-grids. We extensively evaluate our proposed 
+              general-purpose GOEmbed under different experimental settings on the OmniObject3D benchmark. 
+              First, we evaluate how well the mechanism compares against prior encoding mechanisms on multiple 3D 
+              representations using an illustrative experiment called Plenoptic-Encoding. Second, the efficacy of the
+              GOEmbed mechanism is further demonstrated by achieving a new SOTA
+              FID of 22.12 on the OmniObject3D generation task using a combination of GOEmbed and DFM 
+              (Diffusion with Forward Models), which we call GOEmbedFusion. Finally, we evaluate how the GOEmbed mechanism
+              bolsters sparse-view 3D reconstruction pipelines.
             </p>
           </div>
         </div>
@@ -211,21 +223,20 @@
           <div class="content has-text-justified">
             <h2 class="title is-4 has-text-centered">Method</h2>
             <div class="has-text-centered" style="padding-bottom: 15px;">
-              <img src="static/figures/goen_method.png" alt="Holo-diffusion conceptual illustration" width="100%" />
+              <img src="static/figures/goembed_method.jpg" alt="GOEmbed conceptual illustration" width="100%" />
             </div>
             <p>
-              <strong>Didactic illustration of the GOEn mechanism</strong>. We demonstrate the mechanism
+              <strong>Didactic illustration of the GOEmbed mechanism</strong>. We demonstrate the mechanism
               here using the Triplane representation for \(g(c, d)\), but note that this can be applied to
-              other representations as well. The GOEn mechanism consists of two
+              other representations as well. The GOEmbed mechanism consists of two
               steps. First we render the origin \(\zeta_0\) from the context-poses \(\phi^\text{ctxt}\) into
               almost blank renders. Then, we compute the gradient of the MSE between the renders and the
-              source-views \(o^\text{ctxt}\) wrt. the origin \(\zeta_0\) which gives us the GOEn encoded
-              version \(\zeta_\text{enc}\) .
+              source-views \(o^\text{ctxt}\) wrt. the origin \(\zeta_0\) which gives us the GOEmbeddings \(\zeta_\text{enc}\).
             </p>
 
             <div class="has-text-justified" style="padding-top: 10px; padding-bottom: 15px;">
               <p>
-                We propose Gradient Origin Encodings (GOEns), where we define the encodings of the
+                We propose Gradient Origin Embeddings (GOEmbed), where we define the encodings of the
                 observations as the gradient of the log-likelihood of the observations under the
                 differentiable \(\texttt{forward}\) operation. Without loss of generality,
                 assuming that \(\zeta\) are the parameters of the \(g\) function (i.e. the
@@ -235,28 +246,31 @@
                 encodings \(\zeta_\text{enc}\) (fig. above) as follows:
 
                 \begin{align}
-                \zeta_\text{enc} &:= GOEn(g, \mathcal{R}, o^\text{ctxt}, \phi^\text{ctxt}) \nonumber \\
-                &\boxed{:= -\nabla_{\zeta_0}||o^\text{ctxt} - \mathcal{R}(g, \phi^\text{ctxt}; \zeta_0)||^2_2.}
-                \label{eq:goen_enc}
+                \zeta_\text{enc} &:= GOEmbed(g, o^\text{ctxt}, \phi^\text{ctxt}) \nonumber \\
+                &\boxed{:= -\nabla_{\zeta_0}||o^\text{ctxt} - \mathcal{R}(g(c, d; \zeta_0), \phi^\text{ctxt})||^2_2.}
+                \label{eq:goembed}
                 \end{align}
 
                 As done usually, we estimate the log-likehood by the mean squared error and note that
-                the encoding function \(GOEn\) backpropagates through the differentiable forward functional
-                \(\mathcal{R}\). As apparent, these encodings can handle single, multiple or no source views by design,
-                and can be used with any 3D representation \(g\). We minimise the following
-                loss function:
+                the encoding function \(GOEmbed\) backpropagates through the differentiable forward functional
+                \(\mathcal{R}\). These encodings can handle single, or multiple source views by design,
+                and can be used with any 3D representation \(g\). We minimise the following loss function:
 
                 \begin{align}
-                &\mathcal{L}^\text{GOEn-MSE}(o^\text{ctxt}, \hat{o}^\text{ctxt}) := ||o^\text{ctxt} -
-                \hat{o}^\text{ctxt} ||^2_2 \nonumber \\
-                & := ||o^\text{ctxt} - \mathcal{R}(g, \phi^\text{ctxt}; GOEn(g, \mathcal{R}, o^\text{ctxt},
-                \phi^\text{ctxt}))||^2_2,
+                \mathcal{L}^\text{GOEmbed}(o^\text{ctxt}, o^\text{trgt}) :&= ||o^\text{ctxt} -
+                \hat{o}^\text{ctxt} ||^2_2 + ||o^\text{trgt} -
+                \hat{o}^\text{trgt} ||^2_2 \nonumber \\
+                \text{where, } \hat{o} &= \mathcal{R}(g(c, d; \zeta_\text{enc}), \phi).
+
                 \end{align}
 
                 for maximising the information content in the encodings \(\zeta_\text{enc}\).
-                We essentially re-purpose the backward pass of the rendering function to encode the
-                information in the source views \(o^\text{ctxt}\) into the parameters of the 3D scene
-                representation \(\zeta\).
+                Here, \(\phi^\text{ctxt}\) are the camera parameters of the context views used for encoding while \(\phi^\text{trgt}\) are
+                the parameters for some target views of the same scene but different from the source ones. Intuitively, we 
+                repurpose the backward pass of the rendering functional to encode
+                the information in the source views \(o^\text{ctxt}\) into the parameters of the 3D scene
+                representation \(\zeta\). Thus, as long as a mathematically differentiable rendering operator is possible 
+                on it, any 3D scene representation can be encoded using our GOEmbed encoder.
               </p>
             </div>
           </div>
@@ -272,55 +286,175 @@
       <div class="columns is-centered">
         <div class="column is-four-fifths">
           <div class="content has-text-justified">
-            <h2 class="title is-4 has-text-centered">Partial Auto-encoding experiments</h2>
+            <h2 class="title is-4 has-text-centered">Plenoptic Encoding</h2>
             <p>
-              In order to evaluate the information transfer from the source views to the encoded 3D
-              representation, we train the standalone GOEn component on its own before using it in the
-              context of 3D generation and 3D reconstruction. Given the dataset
-              \(D = \lbrace(\mathcal{I}_i^j, \phi_i^j) | i \in [0, N] \text{ and } j \in [0, C]\rbrace\) of \(N\)
-              3D scenes where each scene contains \(C\) images and camera parameters, we define
-              the partial-autoencoder as a mechanism which encodes \(k\) source views and camera parameters, of
-              a certain 3D scene, into the representation \(g\) (whose parameters are \(\zeta\)). The encoded scene
-              representation should be such that the rendered views from the same source cameras, should be as
-              close as possible to the G.T. images \(\mathcal{I}\), i.e., the partial-autoencoder
-              \(PA: \mathbb{R}^{h \times w \times c} \times \mathbb{R}^{4 \times 4} \rightarrow \mathbb{R}^{h \times w
-              \times c}\)
+              To evaluate the information transfer from the source views to the encoded 3D 
+              representation, we train the standalone GOEmbed component on its own before using it 
+              in different contexts. Specifically, given the dataset \(D = \lbrace(\mathcal{I}_i^j, \phi_i^j) | i \in [1, N] \text{ and } j \in [1, C]\rbrace\) 
+              of \(N\) 3D scenes where each scene contains \(C\) images and camera parameters, we 
+              define the Plenoptic Encoding as a mechanism which encodes \(k\) source views and 
+              camera parameters, of a certain 3D scene, into the representation \(g\) (whose parameters 
+              are \(\zeta\)). The encoded scene representation should be such that the rendered views  
+              from the same source cameras, and some \(l\) different target cameras, should be as 
+              close as possible to the G.T. images \(\mathcal{I}\), i.e., the PlenopticEncoder 
+              \(PE: \mathbb{R}^{k \times h \times w \times c} \times \mathbb{R}^{k \times 4 \times 4} \rightarrow \mathbb{R}^{(k + l) \times h \times w \times c}\) 
               should minimize the following mean squared error objective:
-
               \begin{align}
-              \mathcal{L}^\text{PA-MSE} &:= \mathbb{E}_{(\mathcal{I}, \phi) \sim D}\| \mathcal{I} - PA(\mathcal{I},
-              \phi) \|^2_2 \nonumber \\
-              \text{where, } \nonumber \\
-              PA(\mathcal{I}, \phi) &:= \mathcal{R}(g, \phi; GOEn(g, \mathcal{R}, \mathcal{I}, \phi)).
+                \mathcal{L}^\text{PE-MSE} &:= \mathbb{E}_{(\mathcal{I}, \phi) \sim D}\| \mathcal{I} - PE(\mathcal{I}, \phi) \|^2_2 \nonumber.  % \\
+                % \text{where, } \nonumber \\
+                % PA(\mathcal{I}, \phi) &:= \mathcal{R}(g, \phi; GOEn(g, \mathcal{R}, \mathcal{I}, \phi)).
               \end{align}
-
-              Since the auto-encoder is not targeted to do the 3D reconstruction, we denote this setting
-              by the term "<emph>partial-autoencoding</emph>"" instead of autoencoding.
-              We evalute the GOEn encodings on three different 3D Radiance-Field representations, \(g\), namely
-              Triplanes, Feature-Voxel grids, and MLPs.
+              
+              Although this experimental setup is quite similar to typical MVS/NVS or 3D reconstruction 
+              or 3D prior learning setups, in form and essence; we note here that the 
+              plenoptic encoder \(PE\) is neither targeted to do Multi-View Stereo nor 3D 
+              reconstruction. To set the correct expectations, we note that the main and the 
+              only goal here is to evaluate how much information is transferred from the 2D 
+              images to the chosen 3D representation. We evaluate the GOEmbed encodings on three 
+              different 3D Radiance-Field representations, \(g\), namely Triplanes, Feature-Voxel grids 
+              and MLPs and compare them to cost-volume like approaches where possible.
             </p>
+            
             <div class="has-text-justified" style="padding-bottom: 15px;">
               <p>
-                <strong> Quantitative evaluation of Partial AutoEncoding.</strong> PSNR(\(\uparrow\)),
-                LPIPS(\(\downarrow\)) and SSIM(\(\uparrow\)) of GOEn on three different realisations of the
-                3D Radiance-Field \(g\). All the metrics are evaluated for target views (different from the
-                source views) against the G.T. mesh renders from the dataset. The Single-Scene-Overfitting (SSO)
-                scores denote the case of individually fitting the representations to the 3D scenes.
+                <strong>Plenoptic Encoding Quantitative Evaluation.</strong> PSNR(\(\uparrow\)), 
+                LPIPS(\(\downarrow\)) and SSIM(\(\uparrow\)) reported on three different representations of 
+                the 3D Radiance-Field \(g\), namely, Triplanes, Voxel-Grids and MLPs. All the metrics are 
+                evaluated for target views (different from the source views) against the G.T. mesh renders 
+                from the dataset. The SSO (Single Scene Overfitting) scores denote the case of individually 
+                fitting the representations to the 3D scenes.
               </p>
-              <img src="static/figures/partial_autoencoding_quantitative_table.png" alt="Holo-diffusion results"
+              <img src="static/figures/plenoptic_encoding_quantitative_table.png" alt="Plenoptic Encoding results"
                 width="100%" />
             </div>
 
             <div class="has-text-justified" style="padding-bottom: 15px;">
-              <img src="static/figures/goen_pa_web_version.png" alt="Holo-diffusion results" width="100%" />
+              <center>
+                <img src="static/figures/goembed_pe_.jpg" alt="Plenoptic Encoding results" width="70%" />
+              </center> 
               <p>
-                <strong>Qualitative evaluation of Partial-AutoEncoding</strong>. The rows MLP, Triplane and Voxel-grid
-                show the renders of the GOEn encoded representations from the target-view respectively. The
-                colour-coded columns demonstrate the effect of varying the number-of-source views \((1, 2, 3, 4)\) used
-                in
-                the GOEn encoding. The SSO column shows the target render of the single-scene-overfitted representation
-                while the G.T. column shows the mesh-render from the dataset (repeated for clarity).
+                <strong>Plenoptic Encoding Qualitative Evaluation</strong>. The rows MLP, Triplane and 
+                Voxel-grid show the renders of the GOEmbed encoded representations from the target-view 
+                respectively. The colour-coded columns demonstrate the effect of varying the 
+                number-of-source views (1, 2, 3, 4) used in the GOEmbed encoding. The SSO column shows the 
+                target render of the single-scene-overfitted representation while the G.T. column shows the 
+                mesh-render from the dataset (repeated for clarity).
               </p>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <hr />
+
+  <section class="section">
+    <div class="container is-fullhd">
+      <div class="columns is-centered">
+        <div class="column is-four-fifths">
+          <div class="content has-text-justified">
+            <h2 class="title is-4 has-text-centered">3D Generation</h2>
+            <p>
+            </p>
+            
+            <div class="has-text-justified" style="padding-bottom: 15px;">
+              <p>
+                <strong> 3D Generation Quantitative Evaluation. </strong> FID(\(\downarrow\)) and 
+                KID(\(\downarrow\)) scores on the OmniObject3D dataset comparing our GOEmbedFusion with GAN 
+                baselines EG3D, and GET3D; with the non-forward diffusion baselines DiffRF, DiffTF, 
+                and Our non-forward diffusion baseline; and, with the DFM (Diffusion with Forward Model).
+              </p>
+              <center>
+                <img src="static/figures/goembed_3D_generation.png" alt="3D Generation results"
+                width="50%" />
+              </center>
+            </div>
+
+            <div class="has-text-justified" style="padding-bottom: 15px;">
+              
+                <div class="columns" style="padding-bottom: 16px">
+                    <div class="column text-center">
+                        <div class="card shadow-sm">
+                            <center> 
+                              <p style="padding-top: 10px;"> DFM </p>
+                            </center>
+                            <div class="row gx-0">
+                                <div>
+
+                                    <video autoplay loop muted playsinline
+                                        src="static/videos/new_results/dfm_56_samples_grid_1.mp4"
+                                        width="100%"></video>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column text-center">
+                        <div class="card shadow-sm">
+                            <center>
+                              <p style="padding-top: 10px;"> Ours non-forward </p>
+                            </center>
+                            <div class="row gx-0">
+                                <div>
+
+                                    <video autoplay loop muted playsinline
+                                        src="static/videos/new_results/onf_56_samples_grid_1_reverse.mp4"
+                                        width="100%"></video>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="columns" style="padding-bottom: 16px">
+                    <div class="column text-center">
+                        <div class="card shadow-sm">
+                            <center>
+                              <p style="padding-top: 10px;"> DiffTF </p>
+                            </center>
+                            <div class="row gx-0">
+                                <div>
+
+                                    <video autoplay loop muted playsinline
+                                        src="static/videos/new_results/difftf_samples_cropped.mp4"
+                                        width="100%"></video>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="column text-center">
+                        <div class="card shadow-sm">
+                            <center>
+                              <p style="padding-top: 10px;"> GOEmbedFusion (Ours) </p>
+                            </center>
+                            <div class="row gx-0">
+                                <div>
+
+                                    <video autoplay loop muted playsinline
+                                        src="static/videos/new_results/goembedfusion_cropped_samples_reversed.mp4"
+                                        width="100%"></video>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="padding-top: 0px;" class="row text-justify"> 
+                    <p>
+                        <strong>3D Generation Qualitative Evaluation</strong>. 3D samples generated by our 
+                        GOEmbedFusion compared to the prior GAN, and Diffusion based baselines.
+                      
+                        In case of DFM, we perform their vanilla autoregressive sampling procedure 
+                        to generate the 3D samples. Since, the forward diffusion model is based on the 
+                        Pixel-NeRF architecture, and since OmniObject3D dataset has random camera locations, 
+                        the generated videos do not form a smooth closed-loop trajectory around the object.
+                        Apart from this, as we can notice, the generated samples are not perfectly 3D-view consistent.
+                        Although Ours non-forward samples are 3D-view consistent, they are not visually appealing and have noise-artifacts.
+                        Finally, compared to the DiffTF samples, our proposed GOEmbedFusion samples have distinctly sharp appearance and perfect 3D-view consistency. 
+                        We set the new state-of-the-art FID of <strong>22.12</strong> on the OmniObject3D generation benchmark as opposed to the prior
+                        score of 25.36 as obtained by DiffTF.
+                    </p>
+                </div>
             </div>
 
           </div>
@@ -331,7 +465,7 @@
 
   <hr />
 
-  <section class="section" id="Video results">
+  <!-- <section class="section" id="Video results">
     <div class="container content is-fullhd">
       <div class="columns is-centered">
         <div class="column is-four-fifths">
@@ -1298,6 +1432,459 @@
       </div>
 
     </div>
+  </section> -->
+
+  <section class="section">
+    <div class="container is-fullhd">
+      <div class="columns is-centered">
+        <div class="column is-four-fifths">
+          <div class="content has-text-justified">
+            <h2 class="title is-4 has-text-centered">Sparse-View 3D Reconstruction </h2>
+            <p>
+            </p>
+            
+            <div class="has-text-justified" style="padding-bottom: 15px;">
+              <p>
+                <strong>3D reconstruction Quantitative Evaluation.</strong> PSNR(\(\uparrow\)), 
+                LPIPS(\(\downarrow\)) and SSIM(\(\downarrow\)) of our GOEmbed reconstruction model, and 
+                GOEmbedFusion's ``pseudo''-deterministic 3D reconstruction output compared to LRM baselines. 
+                We again include the SSO (Single Scene Overfitting) here for comparison.
+              </p>
+              <center>
+                <img src="static/figures/goembed_sv_3D_recon.png" alt="Sparse View 3D reconstruction results"
+                width="50%" />
+              </center>
+            </div>
+
+            <div style="padding-top: 10px;" class="columns">
+              <div class="column text-center">
+                <center>Source-views</center>  
+              </div>
+              <div class="column text-center">
+                  <center>LRM 16 layers</center>
+              </div>
+              <div class="column text-center">
+                  <center>LRM 6 layers</center>
+              </div>
+              <div class="column text-center">
+                  <center>GOEmbed recon</center>
+              </div>
+          </div>
+          <div class="columns">
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/source_views/ground_truth_test_000_anise_002__all_source_images.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/lrm_16/ground_truth_test_000_anise_002_images_render_reverse_cropped.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/lrm_6/ground_truth_test_000_anise_002_images_render_reverse_cropped.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/goembed/video_anise_002_images_render_reverse.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="columns">
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/source_views/ground_truth_test_000_apple_016__all_source_images.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/lrm_16/ground_truth_test_000_apple_016_images_render_reverse_crop.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/lrm_6/ground_truth_test_000_apple_016_images_render_reverse_crop.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/goembed/video_apple_016_images_render.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="columns">
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/source_views/ground_truth_test_000_asparagus_003__all_source_images.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/lrm_16/ground_truth_test_000_asparagus_003_images_render_reverse_cropped.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/lrm_6/ground_truth_test_000_asparagus_003_images_render_reverse_cropped.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/goembed/video_asparagus_003_images_render.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="columns">
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/source_views/ground_truth_test_000_bowl_007__all_source_images.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/lrm_16/ground_truth_test_000_bowl_007_images_render_reverse_cropped.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/lrm_6/ground_truth_test_000_bowl_007_images_render_reverse_cropped.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/goembed/video_bowl_007_images_render.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="columns">
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/source_views/ground_truth_test_000_beauty_blender_001__all_source_images.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/lrm_16/ground_truth_test_000_beauty_blender_001_images_render_reverse_cropped.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/lrm_6/ground_truth_test_000_beauty_blender_001_images_render_reverse_cropped.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/goembed/video_beauty_blender_001_images_render.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="columns">
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/source_views/ground_truth_test_000_banana_011__all_source_images.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/lrm_16/ground_truth_test_000_banana_011_images_render_reverse_crop.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/lrm_6/ground_truth_test_000_banana_011_images_render_reverse_crop.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/goembed/video_banana_011_images_render_reverse.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="columns">
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/source_views/ground_truth_test_000_brussels_sprout_002__all_source_images.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/lrm_16/ground_truth_test_000_brussels_sprout_002_images_render_reverse_cropped.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/lrm_6/ground_truth_test_000_brussels_sprout_002_images_render_reverse_cropped.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/goembed/video_brussels_sprout_002_images_render.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div class="columns">
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/source_views/ground_truth_test_000_bread_090__all_source_images.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/lrm_16/ground_truth_test_000_bread_090_images_render_reverse_cropped.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/lrm_6/ground_truth_test_000_bread_090_images_render_reverse_cropped.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              <div class="column">
+                  <div class="card shadow-sm">
+                      <div class="row gx-0">
+                          <div >
+                              
+                              <video autoplay loop muted playsinline
+                                  src="static/videos/new_results/recon_results/goembed/video_bread_090_images_render.mp4"
+                                  width="100%"></video>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          <div style="padding-top: 5px;" class="row text-justify"> 
+              <p>
+                  <strong>3D reconstruction Qualitative Evaluation. </strong>
+                  Here we show the 360\(^{\circ}\) rotating videos of the 3D reconstructed scenes from the OmniObject3D dataset.
+                  As visible, the LRM 16 and LRM 6 layers models don't have much difference in the qualitative
+                  results. However, our proposed GOEmbed recon method shows better results in terms of the overall
+                  look and feel, and the spatio-temporal consistency. The LRM reconstructions seem to have 
+                  the presence of checkerboard-like artifacts while GOEmbed reconstructions are free from such artifacts.
+              </p>
+          </div>    
+
+          </div>
+        </div>
+      </div>
+    </div>
   </section>
 
   <hr />
@@ -1310,13 +1897,11 @@
         <div class="column is-four-fifths">
           <h2 class="title is-4 has-text-centered">Bibtex</h2>
           <pre><code>
-            @misc{karnewar2023goenfusion,
-              title={{GOEnFusion}: Gradient Origin Encodings for 3D Forward Diffusion Models}, 
-              author={Animesh Karnewar and Andrea Vedaldi and Niloy J. Mitra and David Novotny},
-              year={2023},
-              eprint={2312.08744},
-              archivePrefix={arXiv},
-              primaryClass={cs.CV}
+            @inproceedings{karnewar2024goembed,
+              title={{GOEmbed}: Gradient Origin Embeddings for Representation Agnostic 3D Feature Learning},
+              author={Karnewar, Animesh and Vedaldi, Andrea and Shapovalov, Roman and Monnier, Tom and Mitra, Niloy J and Novotny, David},
+              booktitle={Proceedings of the IEEE/CVF European Conference on Computer Vision},
+              year={2024}
             }
           </code></pre>
         </div>
@@ -1335,11 +1920,9 @@
             </div>
             <div class="column">
               <p><strong>Animesh and Niloy were partially funded by the European Union's Horizon 2020 research and
-                  innovation programme under the Marie Skłodowska-Curie grant agreement No. 956585.</strong>
+                innovation programme under the Marie Skłodowska-Curie grant agreement No. 956585.</strong>
                 This research has also been supported by <strong>MetaAI</strong>
-                and the <strong>UCL AI Centre</strong>. Finally, Animesh would like to thank
-                <a href="https://shapovalov.ro" target="_blank">Roman Shapovalov</a> for the insightful
-                discussions and help with triplane fitting code.
+                and the <strong>UCL AI Centre</strong>.
               </p>
             </div>
           </div>
